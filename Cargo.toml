@@ -1,0 +1,10 @@
+[workspace]
+resolver = "2"
+members = [
+    "shade-rs-build",
+    "shade-rs-cli",
+    "shade-rs-ui",
+]
+
+[workspace.dependencies.shade-rs-build]
+path = "shade-rs-build"

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <link rel="stylesheet" href="/{{ css }}">
+        <title>shade-rs</title>
+        <base href="/">
+        <link rel="preload" href="/{{ wasm }}" as="fetch" type="application/wasm" crossorigin="">
+        <link rel="modulepreload" href="/{{ js }}">
+        <style>
+            html {
+                background-color: black;
+            }
+
+            body {
+                font-size: 1rem;
+                font-family: Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, monospace;
+                color: white;
+                background-color: black;
+                line-height: 1.5rem;
+                margin: 0;
+                word-wrap: break-word;
+            }
+
+            main {
+                margin-left: 25%;
+                margin-right: 25%;
+                margin-top: 3em;
+                margin-bottom: 3em;
+                padding-left: 1em;
+                padding-right: 1em;
+            }
+
+            #root {
+                display: block;
+                width: 100%;
+                min-height: 100vh;
+            }
+        </style>
+        <!-- CodeMirror -->
+        <link rel="stylesheet" href="https://unpkg.com/codemirror@6.65.7/lib/codemirror.css" />
+        <script src="https://unpkg.com/codemirror@6.65.7/lib/codemirror.js"></script>    
+    </head>
+    <body>
+        <main>
+            <div id="shade-rs-root"></div>
+            <script type="module">
+                import init, { mount_to } from './{{ js }}';
+                await init({});
+                mount_to("shade-rs-root");
+            </script>
+        </main>
+    </body>
+</html>
