@@ -45,6 +45,7 @@ pub async fn compile_ui(
     input_path: impl AsRef<Path>,
     output_path: impl AsRef<Path>,
     clean: bool,
+    release: bool,
 ) -> Result<(), Error> {
     let input_path = input_path.as_ref();
     let output_path = output_path.as_ref();
@@ -82,7 +83,7 @@ pub async fn compile_ui(
     let target_wasm_path = workspace_path
         .join("target")
         .join("wasm32-unknown-unknown")
-        .join("debug")
+        .join(if release { "release" } else { "debug" })
         .join(format!("{target_name}.wasm"));
     tracing::debug!(target_wasm_path = %target_wasm_path.display());
 
@@ -124,7 +125,7 @@ pub async fn compile_ui(
     }
 
     tracing::info!(target = %target_name, "running `cargo build`");
-    cargo.build(Some("wasm32-unknown-unknown")).await?;
+    cargo.build(Some("wasm32-unknown-unknown"), release).await?;
 
     tracing::info!(target = %target_name, "running `wasm-bindgen`");
     wasm_bindgen(&target_wasm_path, output_path, &target_name).await?;
@@ -155,7 +156,7 @@ pub async fn compile_ui(
 
     tracing::debug!(target = %target_name, "generating `embed.html`");
     let mut writer = BufWriter::new(File::create(output_path.join(&embed_filename))?);
-    IndexHtml {
+    EmbedHtml {
         js: &js_filename,
         wasm: &wasm_filename,
         css: &css_filename,
@@ -179,6 +180,15 @@ pub async fn compile_ui(
 #[derive(Debug, Template)]
 #[template(path = "index.html")]
 struct IndexHtml<'a> {
+    js: &'a str,
+    wasm: &'a str,
+    css: &'a str,
+}
+
+
+#[derive(Debug, Template)]
+#[template(path = "embed.html")]
+struct EmbedHtml<'a> {
     js: &'a str,
     wasm: &'a str,
     css: &'a str,

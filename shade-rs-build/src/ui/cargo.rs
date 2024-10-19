@@ -90,12 +90,15 @@ impl Cargo {
             .into_json_result()?)
     }
 
-    pub async fn build(&self, target: Option<&str>) -> Result<(), Error> {
+    pub async fn build(&self, target: Option<&str>, release: bool) -> Result<(), Error> {
         let mut command = self.command();
         command.arg("build");
         if let Some(target) = target {
             command.arg("--target");
             command.arg(target);
+        }
+        if release {
+            command.arg("--release");
         }
         command.spawn()?.wait().await?.into_result()?;
         Ok(())

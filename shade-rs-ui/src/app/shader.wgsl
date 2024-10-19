@@ -32,7 +32,8 @@ fn vs_main(
 @fragment
 fn fs_main(in: VertexOutput) -> FragmentOutput {
     var out: FragmentOutput;
-    let rgb = 0.5 + 0.5 * cos(input.time + in.position.xyx + vec3(0.0, input.mouse.xy));
+    let uv = vec2f(in.position.x * input.aspect, in.position.y);
+    let rgb = 0.5 + 0.5 * cos(input.time + uv.xyx + vec3(0.0, input.mouse.xy));
     out.color = vec4f(rgb, 1.0);
     return out;
 }

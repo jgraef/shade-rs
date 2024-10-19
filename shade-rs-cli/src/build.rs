@@ -54,6 +54,9 @@ pub struct BuildOptions {
     #[arg(long)]
     pub no_debounce: bool,
 
+    #[arg(long)]
+    pub release: bool,
+
     /// Start with a clean build.
     #[arg(long)]
     pub clean: bool,
@@ -64,7 +67,8 @@ impl BuildOptions {
         let debounce = (!self.no_debounce).then(|| Duration::from_secs_f32(self.debounce));
 
         let dist_ui = self.dist_path.join("ui");
-        compile_ui(&self.ui_path, &dist_ui, self.clean).await?;
+        let clean = self.clean || self.release;
+        compile_ui(&self.ui_path, &dist_ui, clean, self.release).await?;
 
         if self.watch {
             tracing::info!("Watching for file changes...");
@@ -74,13 +78,14 @@ impl BuildOptions {
             watch_files.watch(&ui_path)?;
 
             let token = shutdown.token();
+            let release = self.release;
             shutdown.spawn(async move {
                 loop {
                     tokio::select! {
                         _ = token.cancelled() => break,
                         changes_option = watch_files.next(debounce) => {
                             let Some(_changes) = changes_option else { break; };
-                            if let Err(error) = compile_ui(&ui_path, &dist_ui, false).await {
+                            if let Err(error) = compile_ui(&ui_path, &dist_ui, false, release).await {
                                 tracing::error!(%error);
                             }
                         }

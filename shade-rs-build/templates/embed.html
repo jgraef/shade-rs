@@ -1,8 +1,8 @@
 <div class="shade-rs-embed">
     <div id="shade-rs-root"></div>
-    <link rel="stylesheet" href="./{{ css }}">
+    <link rel="stylesheet" href="/shade-rs/{{ css }}">
     <script type="module">
-        import init, { mount_to } from './{{ js }}';
+        import init, { mount_to } from '/shade-rs/{{ js }}';
         await init({});
         mount_to("shade-rs-root");
     </script>
